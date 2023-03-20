@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  category: one
+  status: 1
+  priority: 1
+  is_deleted: false
+  task_date: 2023-03-20 11:18:33
+
+two:
+  name: MyString
+  category: two
+  status: 1
+  priority: 1
+  is_deleted: false
+  task_date: 2023-03-20 11:18:33
