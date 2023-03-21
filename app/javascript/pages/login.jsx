@@ -67,9 +67,7 @@ const Login = (props) => {
             <div className="d-flex flex-column align-items-center justify-content-center" style={{height: "100%", zIndex: "-1"}}>
                 <Card style={{width: "50%"}}>
                     <Card.Header>
-                        <Card.Title>
-                            <h3>Login to continue</h3>
-                        </Card.Title>
+                        <h4>Login to continue</h4>
                     </Card.Header>
                     <Card.Body>
                         <Form onReset={clearStates} onSubmit={handleSubmit}>
