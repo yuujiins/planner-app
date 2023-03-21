@@ -1,16 +1,21 @@
 import React, {useState} from "react"
 import landing from "../assets/landing-bg.jpg";
-import {Button, ButtonGroup, Card, Container, Form} from "react-bootstrap";
-import {Link} from "react-router-dom";
-import {showMessage} from "../services";
+import {Button, ButtonGroup, Card, Container, Form, Toast, ToastContainer} from "react-bootstrap";
+import {Link, useNavigate} from "react-router-dom";
+import {register_user} from "../services/user_service";
+import ToastC from "../components/toastc";
 
 const Register = (props) => {
+    const navigate = useNavigate()
     const [email, setEmail] = useState()
     const [password, setPassword] = useState()
     const [retypePassword, setRetypePassword] = useState()
     const [lastName, setLastName] = useState()
     const [firstName, setFirstName] = useState()
     const [middleName, setMiddleName] = useState()
+    const [toastTitle, setToastTitle] = useState()
+    const [toastMessage, setToastMessage] = useState()
+    const [toastShow, setToastShow] = useState(false)
 
     const clearStates = () => {
         setEmail('')
@@ -45,14 +50,51 @@ const Register = (props) => {
         setRetypePassword(e.target.value)
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
         if(password == retypePassword){
-            alert ("Login will proceed")
+            const data = {
+                last_name: lastName,
+                first_name: firstName,
+                middle_name: middleName,
+                password: password,
+                email: email
+            }
+
+            try{
+                let result = await register_user(data)
+                result = await result.json()
+
+                if(result.errors || result.error){
+                    showMessage("Error", result.errors)
+                }
+                else{
+                    showMessage("Success", "You are now registered")
+                    setTimeout(() => {
+                        navigate('/login', {
+                            replace: false
+                        })
+                    }, 800)
+                }
+
+            }
+            catch (e) {
+                showMessage("Error", "Internal server error occurred. Please contact administrator")
+            }
         }
         else{
-            alert("Passwords do not match")
+            showMessage("Error", "Passwords do not match!")
         }
+    }
+
+    const toastHide = () => {
+        setToastShow(false)
+    }
+
+    const showMessage = (type, message) => {
+        setToastMessage(message)
+        setToastTitle(type)
+        setToastShow(true)
     }
 
     return (
@@ -61,38 +103,39 @@ const Register = (props) => {
                 backgroundSize: "cover",
                 width: "100vw", height: "100vh"
             }} className="landing-bg">
+                <ToastC toastShow={toastShow} toastHide={toastHide} toastMessage={toastMessage} toastTitle={toastTitle}/>
                 <div className="d-flex flex-column align-items-center justify-content-center" style={{height: "100%", zIndex: "-1"}}>
                     <Card style={{width: "50%"}}>
                         <Card.Header>
                             <Card.Title>
-                                <h3>Login to continue</h3>
+                                <h3>Register your account</h3>
                             </Card.Title>
                         </Card.Header>
                         <Card.Body>
                             <Form onReset={clearStates} onSubmit={handleSubmit}>
                                 <Form.Group>
                                     <Form.Label>Last Name</Form.Label>
-                                    <Form.Control type="text" value={lastName} onChange={handleLastName} placeholder="Enter last name" required={true}/>
+                                    <Form.Control autoComplete="new-off" type="text" value={lastName} onChange={handleLastName} placeholder="Enter last name" required={true}/>
                                 </Form.Group>
                                 <Form.Group>
                                     <Form.Label>First Name</Form.Label>
-                                    <Form.Control type="text" value={firstName} onChange={handleFirstName} placeholder="Enter first name" required={true}/>
+                                    <Form.Control autoComplete="new-off" type="text" value={firstName} onChange={handleFirstName} placeholder="Enter first name" required={true}/>
                                 </Form.Group>
                                 <Form.Group>
                                     <Form.Label>Middle Name</Form.Label>
-                                    <Form.Control type="text" value={middleName} onChange={handleMiddleName} placeholder="Enter middle name" required={false}/>
+                                    <Form.Control autoComplete="new-off" type="text" value={middleName} onChange={handleMiddleName} placeholder="Enter middle name" required={false}/>
                                 </Form.Group>
                                 <Form.Group>
                                     <Form.Label>Email</Form.Label>
-                                    <Form.Control type="email" autoComplete="off" value={email} required={true} placeholder="Enter your registered email" onChange={handleEmailInput}/>
+                                    <Form.Control type="email" autoComplete="new-off" value={email} required={true} placeholder="Enter your registered email" onChange={handleEmailInput}/>
                                 </Form.Group>
                                 <Form.Group>
                                     <Form.Label>Password</Form.Label>
-                                    <Form.Control type="password" autoComplete="off" value={password} required={true} placeholder="Enter your password" onChange={handlePasswordInput}/>
+                                    <Form.Control type="password" autoComplete="new-password" value={password} required={true} placeholder="Enter your password" onChange={handlePasswordInput}/>
                                 </Form.Group>
                                 <Form.Group>
                                     <Form.Label>Retype Password</Form.Label>
-                                    <Form.Control type="password" value={retypePassword} onChange={handleRetypeInput} placeholder="Retype your password" required={true}/>
+                                    <Form.Control autoComplete="new-password" type="password" value={retypePassword} onChange={handleRetypeInput} placeholder="Retype your password" required={true}/>
                                 </Form.Group>
                                 <hr/>
                                 <Form.Group>
