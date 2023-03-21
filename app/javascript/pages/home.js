@@ -7,6 +7,7 @@ import {Calendar} from "react-calendar";
 import 'react-calendar/dist/Calendar.css';
 import TaskModal from "../components/task_modal";
 import ToastC from "../components/toastc";
+import CategoriesModal from "../components/categories_modal";
 
 const Home = (props) => {
     const navigate = useNavigate()
@@ -37,7 +38,7 @@ const Home = (props) => {
     }
 
     const handleManageCategory = () => {
-
+        setManageCategoryModalShow(true)
     }
 
     const handleTaskModalClose = () => {
@@ -45,7 +46,7 @@ const Home = (props) => {
     }
 
     const handleCategoryModalClose = () => {
-
+        setManageCategoryModalShow(false)
     }
 
     const toastHide = () => {
@@ -62,6 +63,7 @@ const Home = (props) => {
         <>
             <ToastC toastShow={toastShow} toastHide={toastHide} toastMessage={toastMessage} toastTitle={toastTitle}/>
             <TaskModal onHide={handleTaskModalClose} show={addTaskModalShow} categories={categories}/>
+            <CategoriesModal onHide={handleCategoryModalClose} show={manageCategoryModalShow} categories={categories}/>
             <Navbar bg="light" variant="light" expand="lg">
                 <Container>
                     <Navbar.Brand>
