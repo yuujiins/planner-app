@@ -23,7 +23,6 @@ default: &default
 
 development:
   <<: *default
-  url: <%= ENV['POSTGRES_URL'] %>
   database: planner_app_development
 
   # The specified database role being used to connect to postgres.

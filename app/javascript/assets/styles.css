@@ -1,0 +1,8 @@
+.homeBackground {
+    padding: 10px;
+}
+
+.tasksCard{
+    max-height: 60vh;
+    overflow: auto;
+}

@@ -6,7 +6,7 @@ const ToastC = (props) => {
     return (
         <>
             <ToastContainer className="p-3" position={'top-center'}>
-                <Toast show={props.toastShow} onClose={props.toastHide} autohide={true} delay={2000}>
+                <Toast show={props.toastShow} onClose={props.toastHide} autohide={true} delay={3000}>
                     <Toast.Header closeButton={true}>
                         <strong className="me-auto">{props.toastTitle}</strong>
                     </Toast.Header>
