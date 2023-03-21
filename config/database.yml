@@ -82,6 +82,6 @@ test:
 production:
   <<: *default
   url: <%= ENV['POSTGRES_URL'] %>
-  database: planner_app_production
+  database: planner_app_development
   username: yuujiin
   password: <%= ENV["PLANNER_APP_DATABASE_PASSWORD"] %>
