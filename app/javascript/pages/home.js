@@ -182,6 +182,13 @@ const Home = (props) => {
         setPriority(e.target.value)
     }
 
+    const handleLogout = () => {
+        window.sessionStorage.clear()
+        navigate('/', {
+            replace: true
+        })
+    }
+
 
     return (
         <>
@@ -205,6 +212,22 @@ const Home = (props) => {
                             <Card.Body>
                                 <Calendar onChange={setCalendarDate} value={date} calendarType="US"/>
                             </Card.Body>
+                            <Card.Footer>
+                                <Row className="text-center">
+                                    <Col md={4}>
+                                        <Button type="button" variant="outline-info">Profile</Button>
+                                    </Col>
+                                    <Col md={8}>
+                                        <Button type="button" variant="outline-success">Update Password</Button>
+                                    </Col>
+                                </Row>
+                                <hr/>
+                                <Row>
+                                    <Col className="text-center">
+                                        <Button type="button" variant={"outline-warning"} onClick={handleLogout}>Log out</Button>
+                                    </Col>
+                                </Row>
+                            </Card.Footer>
                         </Card>
                     </Col>
                     <Col md={8}>
