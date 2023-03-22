@@ -70,7 +70,7 @@ const CategoriesModal = (props) => {
 
     return (
       <>
-          <Modal size="lg" show={props.show} onHide={props.onHide} onShow={onModalShow}>
+          <Modal size="lg" keyboard={false} backdrop="static" show={props.show} onHide={props.onHide} onShow={onModalShow}>
               <Modal.Header closeButton>
                   <Modal.Title>{props.isNew ? 'Add' : 'Edit'} category</Modal.Title>
               </Modal.Header>

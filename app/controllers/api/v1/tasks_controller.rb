@@ -4,7 +4,7 @@ class Api::V1::TasksController < ApplicationController
 
   # GET /tasks/
   def index
-    @tasks = @current_user.tasks.where({is_deleted: false})
+    @tasks = @current_user.tasks.where({is_deleted: false}).order("status asc")
 
     if(!params[:task_date].nil?)
       @tasks = @tasks.where(:task_date => params[:task_date])

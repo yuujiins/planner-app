@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import landing from '../assets/landing-bg.jpg'
 import {Container, Image} from "react-bootstrap";
 import '../assets/styles.css';
@@ -8,6 +8,12 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import {useNavigate} from "react-router-dom";
 const Landing = (props) => {
     const navigate = useNavigate()
+
+    useEffect(() => {
+        if(window.sessionStorage.getItem('token')){
+            navigate('/home')
+        }
+    }, [])
     const goToPlanner = () => {
         navigate('/login', {
             replace: false

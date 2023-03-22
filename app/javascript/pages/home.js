@@ -6,11 +6,7 @@ import {
     ButtonGroup,
     Card,
     Container,
-    Modal,
-    Nav,
-    Navbar,
-    OverlayTrigger,
-    Popover,
+    Navbar, NavDropdown,
     Table
 } from "react-bootstrap";
 import "../assets/styles.css";
@@ -24,8 +20,10 @@ import CategoriesModal from "../components/categories_modal";
 import {delete_category, get_categories} from "../services/category_service";
 import {showAlert} from "../services/general";
 import {delete_task, get_tasks, update_task} from "../services/task_service";
+import ProfileModal from "../components/profile_modal";
+import PasswordModal from "../components/password_modal";
 
-const Home = (props) => {
+const Home = () => {
     const navigate = useNavigate()
     const [sortPriority, setPriority] = useState()
     const [toastTitle, setToastTitle] = useState()
@@ -34,7 +32,7 @@ const Home = (props) => {
     const [date, setDate] = useState(new Date())
     const [tasks, setTasks] = useState([])
     const [taskDelete, setTaskDelete] = useState()
-    const [task, setTask] = useState(0)
+    const [task, setTask] = useState()
     const [editTask, setEditTask] = useState(false)
     const [categories, setCategories] = useState([])
     const [addTaskModalShow, setAddTaskModalShow] = useState(false)
@@ -42,17 +40,17 @@ const Home = (props) => {
     const [addCategoryModalShow, setAddCategoryModalShow] = useState(false)
     const [category, setCategory] = useState(0)
     const [flagger, setFlagger] = useState(Math.random())
+    const [profileModalShow, setProfileModalShow] = useState(false)
+    const [passwordModalShow, setPasswordModalShow] = useState(false)
 
     useEffect(() => {
-        if(window.sessionStorage.key('token') == null){
+        if(window.sessionStorage.getItem('token') == null){
             navigate('/login', {
                 replace: false
             })
         }
         else{
             getAllCategories()
-            getTasksFiltered()
-
         }
     }, [date, category, sortPriority, flagger])
 
@@ -62,6 +60,7 @@ const Home = (props) => {
             .then((data) => {
                 setCategories(data)
                 setCategory(category)
+                getTasksFiltered()
             })
     }
 
@@ -99,6 +98,7 @@ const Home = (props) => {
 
     const handleTaskModalClose = () => {
         setAddTaskModalShow(false)
+        setTask(undefined)
         setEditTask(false)
         setFlagger(Math.random())
     }
@@ -130,9 +130,13 @@ const Home = (props) => {
     }
 
     const handleDeleteTask = (e) => {
-        setTaskDelete(e.target.dataset.id)
-        showAlert('Delete task', 'Are you sure you want to delete this task?', deleteTaskCallback, () => {})
+        setTaskDelete(parseInt(e.currentTarget.dataset.id))
     }
+    useEffect(() => {
+        if(taskDelete){
+            showAlert('Delete task', 'Are you sure you want to delete this task?', deleteTaskCallback, () => {})
+        }
+    }, taskDelete)
 
     const yesDeleteCallback = async () => {
         let result = await delete_category(category)
@@ -147,6 +151,7 @@ const Home = (props) => {
     }
 
     const deleteTaskCallback = async () => {
+        console.log(taskDelete)
         let result = await delete_task(taskDelete)
 
         if(result.errors){
@@ -175,10 +180,14 @@ const Home = (props) => {
     }
 
     const taskEditClick = (e) => {
-        setTask(e.target.dataset.id)
+        setTask(parseInt(e.currentTarget.dataset.id))
         setEditTask(true)
-        setAddTaskModalShow(true)
     }
+    useEffect(() => {
+        if(task && editTask){
+            setAddTaskModalShow(true)
+        }
+    }, [task, editTask])
 
     const handleSortChange = (e) => {
         setPriority(e.target.value)
@@ -186,15 +195,31 @@ const Home = (props) => {
 
     const handleLogout = () => {
         window.sessionStorage.clear()
-        navigate('/', {
-            replace: true
-        })
+        window.location.reload()
+    }
+
+    const handleProfileModalClose = () => {
+        setProfileModalShow(false)
+    }
+
+    const handleProfileEditClick = () => {
+        setProfileModalShow(true)
+    }
+
+    const handlePasswordModalClose = () => {
+        setPasswordModalShow(false)
+    }
+
+    const handlePasswordModalClick = () => {
+        setPasswordModalShow(true)
     }
 
 
     return (
         <>
             <ToastC toastShow={toastShow} toastHide={toastHide} toastMessage={toastMessage} toastTitle={toastTitle}/>
+            <PasswordModal onHide={handlePasswordModalClose} show={passwordModalShow}  toast={showMessage}/>
+            <ProfileModal onHide={handleProfileModalClose} show={profileModalShow}  toast={showMessage}/>
             <TaskModal onHide={handleTaskModalClose} show={addTaskModalShow} categories={categories} task={task} isEdit={editTask} toast={showMessage}/>
             <CategoriesModal onHide={handleCategoryModalClose} show={manageCategoryModalShow} isNew={addCategoryModalShow} category={category} toast={showMessage}/>
             <Navbar bg="light" variant="light" expand="lg">
@@ -202,6 +227,20 @@ const Home = (props) => {
                     <Navbar.Brand>
                         Plannist
                     </Navbar.Brand>
+                    <Navbar.Toggle/>
+                    <Navbar.Collapse className="justify-content-end">
+                        <NavDropdown title="Settings">
+                            <NavDropdown.Item onClick={handleProfileEditClick}>
+                                Update Profile
+                            </NavDropdown.Item>
+                            <NavDropdown.Item onClick={handlePasswordModalClick}>
+                                Update password
+                            </NavDropdown.Item>
+                            <NavDropdown.Item onClick={handleLogout}>
+                                Logout
+                            </NavDropdown.Item>
+                        </NavDropdown>
+                    </Navbar.Collapse>
                 </Container>
             </Navbar>
             <Container className="homeBackground">
@@ -211,24 +250,16 @@ const Home = (props) => {
                             <Card.Header>
                                 <h4>Calendar</h4>
                             </Card.Header>
-                            <Card.Body>
+                            <Card.Body className="d-flex flex-column align-items-center justify-content-center">
                                 <Calendar onChange={setCalendarDate} value={date} calendarType="US"/>
                             </Card.Body>
                             <Card.Footer>
-                                <Row className="text-center">
-                                    <Col md={4}>
-                                        <Button type="button" variant="outline-info">Profile</Button>
-                                    </Col>
-                                    <Col md={8}>
-                                        <Button type="button" variant="outline-success">Update Password</Button>
-                                    </Col>
-                                </Row>
-                                <hr/>
-                                <Row>
-                                    <Col className="text-center">
-                                        <Button type="button" variant={"outline-warning"} onClick={handleLogout}>Log out</Button>
-                                    </Col>
-                                </Row>
+                                <small>Signed in as: </small>
+                                <h4 className="text-center">
+                                    {`${window.sessionStorage.getItem('first_name')} ${window.sessionStorage.getItem('last_name')}`} <br/>
+                                    <small style={{fontSize: "11pt"}} className="text-center">{window.sessionStorage.getItem('email')}</small>
+                                </h4>
+
                             </Card.Footer>
                         </Card>
                     </Col>

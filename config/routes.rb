@@ -13,6 +13,7 @@ Rails.application.routes.draw do
   end
 
   post '/auth/login', to: 'authentication#login'
+  post '/users/password', to: 'users#password'
   get '/*a', to: 'home#index'
   root to: 'home#index'
 end

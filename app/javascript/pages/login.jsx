@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Button, ButtonGroup, Card, Container, Form, Image} from "react-bootstrap";
 import landing from "../assets/landing-bg.jpg";
 import journal from "../assets/journal.png";
@@ -12,7 +12,16 @@ const Login = (props) => {
     const [toastTitle, setToastTitle] = useState()
     const [toastMessage, setToastMessage] = useState()
     const [toastShow, setToastShow] = useState(false)
+    const [token, setToken] = useState()
 
+
+    useEffect(() => {
+        if(window.sessionStorage.getItem('token')){
+            navigate('/home', {
+                replace: false
+            })
+        }
+    }, [])
     const handleEmailInput = (event) =>{
         setEmail(event.target.value)
     }
@@ -26,34 +35,37 @@ const Login = (props) => {
         setPassword('')
     }
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = (event) => {
         event.preventDefault()
         const data = {
             email: email,
             password: password
         }
 
-        let result = await login_user(data);
-        result = await result.json()
-        try{
+        login_user(data)
+            .then((result) => result.json())
+            .then((data) => {
+                if(data.error){
+                    showMessage("Error", data.error)
+                }
+                else{
+                    window.sessionStorage.setItem("token", data.token)
+                    window.sessionStorage.setItem("user_id", data.id)
+                    window.sessionStorage.setItem("email", data.email)
+                    window.sessionStorage.setItem("last_name", data.last_name)
+                    window.sessionStorage.setItem("first_name", data.first_name)
+                    window.sessionStorage.setItem("middle_name", data.middle_name == null ? '' : data.middle_name)
 
-            if(result.error){
-                showMessage("Error", result.error)
-            }
-            else{
-                window.sessionStorage.setItem("token", result.token)
-                showMessage("Success", "You are now logged in")
-                setTimeout(() => {
-                    navigate('/home', {
-                        replace: false
-                    })
-                }, 500)
-            }
-
-        }catch (e) {
-            showMessage("Error", "Internal server error occurred. Please contact administrator")
-        }
+                    setToken(data.token)
+                }
+            })
     }
+    useEffect(() => {
+        if(token){
+            showMessage("Success", "You are now logged in")
+            window.location.href = '/home'
+        }
+    }, [token])
     const toastHide = () => {
         setToastShow(false)
     }

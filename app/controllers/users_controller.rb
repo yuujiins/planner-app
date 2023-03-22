@@ -25,19 +25,29 @@ class UsersController < ApplicationController
 
   end
 
-  #PUT /users/:id
+  #PUT /users/
   def update
 
-    unless @user.update(user_params)
+    unless @current_user.update(user_params)
       render json: {errors: @user.errors.full_messages},
              status: :unprocessable_entity
     end
 
   end
 
+  #PUT /users/password
+  def password
+    puts @user.id
+    if @user&.authenticate(params[:old_password])
+      @user.update({password: params[:password]})
+    else
+      render json: {error: "Incorrect password"}, status: :unauthorized
+    end
+
+  end
+
   #DELETE /users/id
   def destroy
-
     if @user.update({is_deleted: true})
       render json: @user, status: :ok
     else
@@ -58,7 +68,7 @@ class UsersController < ApplicationController
 
   def user_params
     params.permit(
-      :last_name, :first_name, :middle_name, :email, :password
+      :last_name, :first_name, :middle_name, :email, :password, :old_password
     )
   end
 end

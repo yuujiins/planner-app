@@ -2,10 +2,14 @@
 @import '../../../node_modules/react-confirm-alert/src/react-confirm-alert.css';
 
 .homeBackground {
-    padding: 10px;
+    padding-top: 50px;
 }
 
 .tasksCard{
     max-height: 60vh;
     overflow: auto;
+}
+
+.form-control{
+    margin-bottom: 5px;
 }
