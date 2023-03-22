@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react"
 import {useNavigate} from "react-router-dom";
 import {
+    Badge,
     Button,
     ButtonGroup,
     Card,
@@ -236,7 +237,7 @@ const Home = (props) => {
                             <Card.Header>
                                 <h4 className="float-start">Your tasks for {date.toLocaleDateString() == new Date().toLocaleDateString() ? "today" : date.toLocaleDateString()}</h4>
                                 <div className="float-end">
-                                    <Button variant="outline-primary" className="btn btn-sm" onClick={handleAddTask}>Add</Button>
+                                    <Button variant="outline-primary" className="btn btn-sm" onClick={handleAddTask}><i className="fa-solid fa-plus"></i> </Button>
                                 </div>
                             </Card.Header>
                             <Card.Body className="tasksCard">
@@ -247,7 +248,7 @@ const Home = (props) => {
                                     <Table className="table-striped">
                                         <thead>
                                             <tr>
-                                                <th>Complete</th>
+                                                <th></th>
                                                 <th>Task</th>
                                                 <th>Priority</th>
                                                 <th>Actions</th>
@@ -262,11 +263,13 @@ const Home = (props) => {
                                                     {t.name}
                                                 </td>
                                                 <td>
-                                                    {t.priority == 0 ? 'Low' : t.priority == 1 ? 'Medium' : 'High'}
+                                                    <Badge bg={t.priority == 0 ? 'success' : t.priority == 1 ? 'warning' : 'danger'}>
+                                                        {t.priority == 0 ? 'Low' : t.priority == 1 ? 'Medium' : 'High'}
+                                                    </Badge>
                                                 </td>
                                                 <td>
-                                                    <Button type="button" data-id={t.id} variant="outline-success" className="btn-sm" onClick={taskEditClick}>Edit</Button>
-                                                    <Button type="button" data-id={t.id} variant="outline-danger" className="btn-sm" onClick={handleDeleteTask}>Delete</Button>
+                                                    <Button type="button" data-id={t.id} variant="outline-success" className="btn-sm" onClick={taskEditClick}><i className="fa-solid fa-pencil"></i></Button>
+                                                    <Button type="button" data-id={t.id} variant="outline-danger" className="btn-sm" onClick={handleDeleteTask}><i className="fa-solid fa-trash"></i></Button>
                                                 </td>
                                             </tr>)}
                                         </tbody>
@@ -300,9 +303,9 @@ const Home = (props) => {
                                                 </Col>
                                                 <Col md={4} className="d-flex flex-colum align-items-center justify-content-center">
                                                     <ButtonGroup>
-                                                        <Button variant="outline-success" className="btn-sm" onClick={handleAddCategoryModal}>Add</Button>
-                                                        <Button variant="outline-info" className="btn-sm" onClick={handleManageCategory} disabled={category == 0}>Edit</Button>
-                                                        <Button variant="outline-danger" className="btn-sm" disabled={category == 0} onClick={handleDeleteCategory}>Delete</Button>
+                                                        <Button variant="outline-success" className="btn-sm" onClick={handleAddCategoryModal}><span className="fa fa-plus"></span></Button>
+                                                        <Button variant="outline-info" className="btn-sm" onClick={handleManageCategory} disabled={category == 0}><i className="fa-solid fa-pencil"></i></Button>
+                                                        <Button variant="outline-danger" className="btn-sm" disabled={category == 0} onClick={handleDeleteCategory}><i className="fa fa-trash"></i></Button>
                                                     </ButtonGroup>
                                                 </Col>
                                             </Row>
