@@ -41,3 +41,12 @@ export const update_category = async (id, data) => {
 
     return result;
 }
+
+export const delete_category = async(id) => {
+    let result = await fetch(server + id, {
+        method: 'DELETE',
+        headers: headerAuth
+    })
+
+    return result
+}

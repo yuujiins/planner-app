@@ -22,6 +22,11 @@ const CategoriesModal = (props) => {
                     setCategoryId(data.id)
                 })
         }
+        else{
+            setName('')
+            setCategoryId('')
+            setDescription('')
+        }
     }
 
     const handleNameInput = (e) => {
@@ -57,6 +62,7 @@ const CategoriesModal = (props) => {
             }
             else{
                 props.toast("Success!", "Category has been updated")
+
                 props.onHide()
             }
         }

@@ -5,8 +5,24 @@ class Api::V1::TasksController < ApplicationController
   # GET /tasks/
   def index
     @tasks = @current_user.tasks.where({is_deleted: false})
+
+    if(!params[:task_date].nil?)
+      @tasks = @tasks.where(:task_date => params[:task_date])
+    end
+
+    if(params[:category_id] != "null")
+      @tasks = @tasks.where("category_id = " + params[:category_id])
+    end
+
+    if(params[:sort] != "null")
+      @tasks = @tasks.all.order("priority " + params[:sort])
+    end
+
     render json: @tasks, status: :ok
   end
+
+  # GET /tasks/?task_date=q&category_id=:id
+
 
   #GET /tasks/:id
   def show
