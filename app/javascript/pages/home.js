@@ -15,7 +15,6 @@ import {
 import "../assets/styles.css";
 import {Col, Row} from "react-bootstrap";
 import {Calendar} from "react-calendar";
-import 'react-calendar/dist/Calendar.css';
 import TaskModal from "../components/task_modal";
 import ToastC from "../components/toastc";
 import CategoriesModal from "../components/categories_modal";
