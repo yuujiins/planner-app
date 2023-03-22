@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react"
 import {useNavigate} from "react-router-dom";
-import {Button, Card, Container, Modal, Nav, Navbar} from "react-bootstrap";
+import {Button, ButtonGroup, Card, Container, Modal, Nav, Navbar, OverlayTrigger, Popover} from "react-bootstrap";
 import "../assets/styles.css";
 import {Col, Row} from "react-bootstrap";
 import {Calendar} from "react-calendar";
@@ -8,6 +8,7 @@ import 'react-calendar/dist/Calendar.css';
 import TaskModal from "../components/task_modal";
 import ToastC from "../components/toastc";
 import CategoriesModal from "../components/categories_modal";
+import {get_categories} from "../services/category_service";
 
 const Home = (props) => {
     const navigate = useNavigate()
@@ -19,6 +20,8 @@ const Home = (props) => {
     const [categories, setCategories] = useState([])
     const [addTaskModalShow, setAddTaskModalShow] = useState(false)
     const [manageCategoryModalShow, setManageCategoryModalShow] = useState(false)
+    const [addCategoryModalShow, setAddCategoryModalShow] = useState(false)
+    const [category, setCategory] = useState(0)
 
     useEffect(() => {
         if(window.sessionStorage.key('token') == null){
@@ -26,7 +29,18 @@ const Home = (props) => {
                 replace: false
             })
         }
+        else{
+            getAllCategories()
+        }
     }, [])
+
+    const getAllCategories = () => {
+        get_categories()
+            .then((result) => result.json())
+            .then((data) => {
+                setCategories(data)
+            })
+    }
 
     const handleAddTask = () => {
         if(categories.length == 0){
@@ -35,6 +49,10 @@ const Home = (props) => {
         else{
             setAddTaskModalShow(true)
         }
+    }
+
+    const handleChangeCategory = (e) => {
+        setCategory(e.target.value)
     }
 
     const handleManageCategory = () => {
@@ -47,6 +65,15 @@ const Home = (props) => {
 
     const handleCategoryModalClose = () => {
         setManageCategoryModalShow(false)
+        setAddCategoryModalShow(false)
+
+        //reloads categories
+        getAllCategories()
+    }
+
+    const handleAddCategoryModal = () => {
+        setManageCategoryModalShow(true)
+        setAddCategoryModalShow(true)
     }
 
     const toastHide = () => {
@@ -59,11 +86,15 @@ const Home = (props) => {
         setToastShow(true)
     }
 
+    const handleDeleteCategory = () => {
+
+    }
+
     return (
         <>
             <ToastC toastShow={toastShow} toastHide={toastHide} toastMessage={toastMessage} toastTitle={toastTitle}/>
             <TaskModal onHide={handleTaskModalClose} show={addTaskModalShow} categories={categories}/>
-            <CategoriesModal onHide={handleCategoryModalClose} show={manageCategoryModalShow} categories={categories}/>
+            <CategoriesModal onHide={handleCategoryModalClose} show={manageCategoryModalShow} isNew={addCategoryModalShow} category={category} toast={showMessage}/>
             <Navbar bg="light" variant="light" expand="lg">
                 <Container>
                     <Navbar.Brand>
@@ -76,9 +107,7 @@ const Home = (props) => {
                     <Col md={4}>
                         <Card>
                             <Card.Header>
-                                <Card.Title>
-                                    <h4 className="text-center">Calendar</h4>
-                                </Card.Title>
+                                <h4>Calendar</h4>
                             </Card.Header>
                             <Card.Body>
                                 <Calendar onChange={setDate} value={date} calendarType="US"/>
@@ -102,7 +131,7 @@ const Home = (props) => {
                             <Card.Footer>
                                 <Container>
                                     <Row>
-                                        <Col>
+                                        <Col md={4}>
                                             <div className="form-group">
                                                 <label className="control-label">Sort by</label>
                                                 <select className="form-control">
@@ -117,14 +146,18 @@ const Home = (props) => {
                                                 <Col>
                                                     <div className="form-group">
                                                         <label className="control-label">Category</label>
-                                                        <select className="form-control">
-                                                            <option value="all">All</option>
+                                                        <select className="form-control" onChange={handleChangeCategory} value={category}>
+                                                            <option value="0">All</option>
                                                             {categories.map(c => <option value={c.id}>{c.name}</option>)}
                                                         </select>
                                                     </div>
                                                 </Col>
-                                                <Col md={3} className="d-flex flex-colum align-items-center justify-content-center">
-                                                    <Button variant="outline-info" className="btn-sm" onClick={handleManageCategory}>Manage</Button>
+                                                <Col md={4} className="d-flex flex-colum align-items-center justify-content-center">
+                                                    <ButtonGroup>
+                                                        <Button variant="outline-success" className="btn-sm" onClick={handleAddCategoryModal}>Add</Button>
+                                                        <Button variant="outline-info" className="btn-sm" onClick={handleManageCategory} disabled={category == 0}>Edit</Button>
+                                                        <Button variant="outline-danger" className="btn-sm" disabled={category == 0}>Delete</Button>
+                                                    </ButtonGroup>
                                                 </Col>
                                             </Row>
                                         </Col>

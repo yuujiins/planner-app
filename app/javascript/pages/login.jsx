@@ -2,10 +2,11 @@ import React, {useState} from "react";
 import {Button, ButtonGroup, Card, Container, Form, Image} from "react-bootstrap";
 import landing from "../assets/landing-bg.jpg";
 import journal from "../assets/journal.png";
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import ToastC from "../components/toastc";
 import {login_user} from "../services/user_service";
 const Login = (props) => {
+    const navigate = useNavigate()
     const [email, setEmail] = useState()
     const [password, setPassword] = useState()
     const [toastTitle, setToastTitle] = useState()
@@ -42,6 +43,11 @@ const Login = (props) => {
             else{
                 window.sessionStorage.setItem("token", result.token)
                 showMessage("Success", "You are now logged in")
+                setTimeout(() => {
+                    navigate('/home', {
+                        replace: false
+                    })
+                }, 500)
             }
 
         }catch (e) {
