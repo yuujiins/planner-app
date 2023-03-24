@@ -22,6 +22,7 @@ import {showAlert} from "../services/general";
 import {delete_task, get_tasks, update_task} from "../services/task_service";
 import ProfileModal from "../components/profile_modal";
 import PasswordModal from "../components/password_modal";
+import LoadingModal from "../components/loading_modal";
 
 const Home = () => {
     const navigate = useNavigate()
@@ -42,6 +43,7 @@ const Home = () => {
     const [flagger, setFlagger] = useState(Math.random())
     const [profileModalShow, setProfileModalShow] = useState(false)
     const [passwordModalShow, setPasswordModalShow] = useState(false)
+    const [showLoading, setShowLoading] = useState(false)
 
     useEffect(() => {
         if(window.sessionStorage.getItem('token') == null){
@@ -55,6 +57,7 @@ const Home = () => {
     }, [date, category, sortPriority, flagger])
 
     const getAllCategories = () => {
+        setShowLoading(true)
         get_categories()
             .then((result) => result.json())
             .then((data) => {
@@ -75,6 +78,7 @@ const Home = () => {
             .then((data) => {
 
                 setTasks(data)
+                setShowLoading(false)
             })
     }
 
@@ -139,6 +143,7 @@ const Home = () => {
     }, taskDelete)
 
     const yesDeleteCallback = async () => {
+        setShowLoading(true)
         let result = await delete_category(category)
 
         if (result.errors){
@@ -148,10 +153,10 @@ const Home = () => {
             setFlagger(Math.random())
             showMessage("Success", "Category has been deleted")
         }
+        setShowLoading(false)
     }
 
     const deleteTaskCallback = async () => {
-        console.log(taskDelete)
         let result = await delete_task(taskDelete)
 
         if(result.errors){
@@ -218,6 +223,7 @@ const Home = () => {
     return (
         <>
             <ToastC toastShow={toastShow} toastHide={toastHide} toastMessage={toastMessage} toastTitle={toastTitle}/>
+            <LoadingModal show={showLoading}/>
             <PasswordModal onHide={handlePasswordModalClose} show={passwordModalShow}  toast={showMessage}/>
             <ProfileModal onHide={handleProfileModalClose} show={profileModalShow}  toast={showMessage}/>
             <TaskModal onHide={handleTaskModalClose} show={addTaskModalShow} categories={categories} task={task} isEdit={editTask} toast={showMessage}/>

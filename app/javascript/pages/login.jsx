@@ -5,6 +5,7 @@ import journal from "../assets/journal.png";
 import {Link, useNavigate} from "react-router-dom";
 import ToastC from "../components/toastc";
 import {login_user} from "../services/user_service";
+import LoadingModal from "../components/loading_modal";
 const Login = (props) => {
     const navigate = useNavigate()
     const [email, setEmail] = useState()
@@ -13,6 +14,7 @@ const Login = (props) => {
     const [toastMessage, setToastMessage] = useState()
     const [toastShow, setToastShow] = useState(false)
     const [token, setToken] = useState()
+    const [showLoading, setShowLoading] = useState(false)
 
 
     useEffect(() => {
@@ -37,6 +39,7 @@ const Login = (props) => {
 
     const handleSubmit = (event) => {
         event.preventDefault()
+        setShowLoading(true)
         const data = {
             email: email,
             password: password
@@ -58,6 +61,7 @@ const Login = (props) => {
 
                     setToken(data.token)
                 }
+                setShowLoading(false)
             })
     }
     useEffect(() => {
@@ -81,6 +85,7 @@ const Login = (props) => {
             backgroundSize: "cover",
             width: "100vw", height: "100vh"
         }} className="landing-bg">
+            <LoadingModal show={showLoading}/>
             <ToastC toastShow={toastShow} toastHide={toastHide} toastMessage={toastMessage} toastTitle={toastTitle}/>
             <div className="d-flex flex-column align-items-center justify-content-center" style={{height: "100%", zIndex: "-1"}}>
                 <Card style={{width: "50%"}}>
