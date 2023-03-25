@@ -145,9 +145,9 @@ const Home = () => {
     const yesDeleteCallback = async () => {
         setShowLoading(true)
         let result = await delete_category(category)
-
-        if (result.errors){
-            showMessage("Error", result.errors)
+        if (!result.ok){
+            const body = await result.json()
+            showMessage("Error", body.errors)
         }
         else{
             setFlagger(Math.random())
@@ -159,8 +159,9 @@ const Home = () => {
     const deleteTaskCallback = async () => {
         let result = await delete_task(taskDelete)
 
-        if(result.errors){
-            showMessage("Error", result.errors)
+        if(!result.ok){
+            const body = await result.json()
+            showMessage("Error", body.errors)
         }
         else{
             setFlagger(Math.random())
@@ -287,6 +288,7 @@ const Home = () => {
                                             <tr>
                                                 <th></th>
                                                 <th>Task</th>
+                                                <th>Category</th>
                                                 <th>Priority</th>
                                                 <th>Actions</th>
                                             </tr>
@@ -300,12 +302,15 @@ const Home = () => {
                                                     {t.name}
                                                 </td>
                                                 <td>
+                                                    {categories.filter(c => c.id == t.category_id)[0].name}
+                                                </td>
+                                                <td>
                                                     <Badge bg={t.priority == 0 ? 'success' : t.priority == 1 ? 'warning' : 'danger'}>
                                                         {t.priority == 0 ? 'Low' : t.priority == 1 ? 'Medium' : 'High'}
                                                     </Badge>
                                                 </td>
                                                 <td>
-                                                    <Button type="button" data-id={t.id} variant="outline-success" className="btn-sm" onClick={taskEditClick}><i className="fa-solid fa-pencil"></i></Button>
+                                                    <Button type="button" data-id={t.id} variant="outline-success" className="btn-sm" onClick={taskEditClick}><i className="fa-solid fa-eye"></i></Button>
                                                     <Button type="button" data-id={t.id} variant="outline-danger" className="btn-sm" onClick={handleDeleteTask}><i className="fa-solid fa-trash"></i></Button>
                                                 </td>
                                             </tr>)}
@@ -341,7 +346,7 @@ const Home = () => {
                                                 <Col md={4} className="d-flex flex-colum align-items-center justify-content-center">
                                                     <ButtonGroup>
                                                         <Button variant="outline-success" className="btn-sm" onClick={handleAddCategoryModal}><span className="fa fa-plus"></span></Button>
-                                                        <Button variant="outline-info" className="btn-sm" onClick={handleManageCategory} disabled={category == 0}><i className="fa-solid fa-pencil"></i></Button>
+                                                        <Button variant="outline-info" className="btn-sm" onClick={handleManageCategory} disabled={category == 0}><i className="fa-solid fa-eye"></i></Button>
                                                         <Button variant="outline-danger" className="btn-sm" disabled={category == 0} onClick={handleDeleteCategory}><i className="fa fa-trash"></i></Button>
                                                     </ButtonGroup>
                                                 </Col>

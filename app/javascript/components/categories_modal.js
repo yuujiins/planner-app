@@ -46,7 +46,6 @@ const CategoriesModal = (props) => {
         if(props.isNew){
             let result = await add_category(data)
             result = await result.json()
-
             if(result.errors){
                 props.toast("Error", result.errors[0])
             }

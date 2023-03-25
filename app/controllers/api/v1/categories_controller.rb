@@ -24,7 +24,7 @@ class Api::V1::CategoriesController < ApplicationController
     @category.user_id = @current_user.id
 
     if @category.save
-      render json: @category, status: :ok
+      render json: @category, status: :created
     else
       render json: {errors: @category.errors.full_messages}, status: :unprocessable_entity
     end
@@ -41,10 +41,14 @@ class Api::V1::CategoriesController < ApplicationController
 
   #DELETE /categories/:id
   def destroy
-    if(@category.update({is_deleted: true}))
-      render json: @category, status: :ok
+    if(@category.tasks.where({is_deleted: false}).length > 0)
+      render json: {errors: "Category is in use!"}, status: :unprocessable_entity
     else
-      render json: {errors: @category.errors.full_messages}, status: :unprocessable_entity
+      if(@category.update({is_deleted: true}))
+        render json: @category, status: :ok
+      else
+        render json: {errors: @category.errors.full_messages}, status: :unprocessable_entity
+      end
     end
   end
 

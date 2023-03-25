@@ -1,11 +1,11 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  last_name: MyString
-  first_name: MyString
-  middle_name: MyString
-  password_digest: MyString
-  email: MyString
+  last_name: User
+  first_name: Test
+  middle_name: er
+  password_digest: Password
+  email: email@test.random
   is_deleted: false
 
 two:
@@ -13,5 +13,5 @@ two:
   first_name: MyString
   middle_name: MyString
   password_digest: MyString
-  email: MyString
+  email: email2@test.random
   is_deleted: false

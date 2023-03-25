@@ -10,11 +10,11 @@ class Api::V1::TasksController < ApplicationController
       @tasks = @tasks.where(:task_date => params[:task_date])
     end
 
-    if(params[:category_id] != "null")
+    if(params[:category_id] != "null" && !params[:category_id].nil?)
       @tasks = @tasks.where("category_id = " + params[:category_id])
     end
 
-    if(params[:sort] != "null")
+    if(params[:sort] != "null" && !params[:sort].nil?)
       @tasks = @tasks.all.order("priority " + params[:sort])
     end
 
@@ -34,7 +34,7 @@ class Api::V1::TasksController < ApplicationController
 
     @task = Task.new(task_params)
     if @task.save
-      render json: @task, status: :ok
+      render json: @task, status: :created
     else
       render json: {errors: @task.errors.full_messages}, status: :unprocessable_entity
     end
