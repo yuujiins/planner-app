@@ -28,7 +28,7 @@ const TaskModal = (props) => {
         }
         else{
             setTaskName('')
-            setCategory('')
+            setCategory(props.currentCategory)
             setTaskPriority(0)
             setTaskStatus(0)
             setTaskDate(props.currentDate.toLocaleDateString("en-CA"))
