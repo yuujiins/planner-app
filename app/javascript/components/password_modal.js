@@ -1,11 +1,13 @@
 import {Button, ButtonGroup, Col, Form, Modal, Row} from "react-bootstrap";
 import React, {useState} from "react";
 import {update_password, update_user} from "../services/user_service";
+import LoadingModal from "./loading_modal";
 
 const PasswordModal = (props) => {
     const [oldPassword, setOldPassword] = useState()
     const [newPassword, setNewPassword] = useState()
     const [retypePassword, setRetypePassword] = useState()
+    const [showLoading, setShowLoading] = useState(false)
 
     const onModalShow = () => {
         setOldPassword('')
@@ -26,6 +28,8 @@ const PasswordModal = (props) => {
 
     const formSubmit = async (e) => {
         e.preventDefault()
+        props.onHide()
+        setShowLoading(true)
         const data = {
             id: window.sessionStorage.getItem('user_id'),
             old_password: oldPassword,
@@ -34,9 +38,9 @@ const PasswordModal = (props) => {
 
         if(newPassword == retypePassword){
             let result = await update_password(data)
-            console.log(result)
             if(!result.ok){
-                props.toast("Error!", result.errors)
+                const body = await result.json()
+                props.toast("Error", body.errors)
             }
             else{
                 props.toast("Success", "Password updated!")
@@ -46,11 +50,13 @@ const PasswordModal = (props) => {
         else{
             props.toast("Error", "Passwords do not match")
         }
+        setShowLoading(false)
     }
 
     return (
         <>
-            <Modal show={props.show} onHide={props.onHide} backdrop="static" keyboard={false}>
+            <LoadingModal show={showLoading}/>
+            <Modal show={props.show} onShow={onModalShow} onHide={props.onHide} backdrop="static" keyboard={false}>
                 <Modal.Header closeButton>
                     <Modal.Title>Update password</Modal.Title>
                 </Modal.Header>
@@ -58,15 +64,15 @@ const PasswordModal = (props) => {
                     <Form onSubmit={formSubmit}>
                         <Form.Group>
                             <Form.Label>Old Password<span className="text-danger">*</span></Form.Label>
-                            <Form.Control type="text" value={oldPassword} onChange={handleOldPasswordInput} required/>
+                            <Form.Control type="password" value={oldPassword} onChange={handleOldPasswordInput} required/>
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>New Password<span className="text-danger">*</span></Form.Label>
-                            <Form.Control type="text" value={newPassword} onChange={handleNewPasswordInput} required/>
+                            <Form.Control type="password" value={newPassword} onChange={handleNewPasswordInput} required/>
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>Retype Password<span className="text-danger">*</span></Form.Label>
-                            <Form.Control type="text" value={retypePassword} onChange={handleRetypePasswordInput} required/>
+                            <Form.Control type="password" value={retypePassword} onChange={handleRetypePasswordInput} required/>
                         </Form.Group>
                         <hr/>
                         <Form.Group>

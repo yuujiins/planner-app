@@ -1,13 +1,14 @@
 import {Button, ButtonGroup, Col, Form, Modal, Row} from "react-bootstrap";
 import React, {useState} from "react";
 import {update_user} from "../services/user_service";
+import LoadingModal from "./loading_modal";
 
 const ProfileModal = (props) => {
     const [lastName, setLastName] = useState(window.sessionStorage.getItem('last_name'))
     const [firstName, setFirstName] = useState(window.sessionStorage.getItem('first_name'))
     const [middleName, setMiddleName] = useState(window.sessionStorage.getItem('middle_name'))
     const [email, setEmail] = useState(window.sessionStorage.getItem('email'))
-
+    const [showLoading, setShowLoading] = useState(false)
     const handleEmailInput = (e) => {
         setEmail(e.target.value)
     }
@@ -26,6 +27,8 @@ const ProfileModal = (props) => {
 
     const formSubmit = async (e) => {
         e.preventDefault()
+        props.onHide()
+        setShowLoading(true)
         const data = {
             last_name: lastName,
             first_name: firstName,
@@ -44,12 +47,13 @@ const ProfileModal = (props) => {
             window.sessionStorage.setItem('middle_name', middleName)
             window.sessionStorage.setItem('email', email)
             props.toast("Success", "Profile updated!")
-            props.onHide()
         }
+        setShowLoading(false)
     }
 
     return (
         <>
+            <LoadingModal show={showLoading} />
             <Modal show={props.show} onHide={props.onHide} backdrop="static" keyboard={false}>
                 <Modal.Header closeButton>
                     <Modal.Title>{props.isEdit ? 'Edit' : 'Add'} profile</Modal.Title>

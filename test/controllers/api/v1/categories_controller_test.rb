@@ -60,7 +60,7 @@ class Api::V1::CategoriesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "delete category" do
-    category = categories(:one)
+    category = categories(:two)
 
     delete api_v1_category_url(category), headers: @headers, xhr: true
 
