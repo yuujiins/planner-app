@@ -227,7 +227,7 @@ const Home = () => {
             <LoadingModal show={showLoading}/>
             <PasswordModal onHide={handlePasswordModalClose} show={passwordModalShow}  toast={showMessage}/>
             <ProfileModal onHide={handleProfileModalClose} show={profileModalShow}  toast={showMessage}/>
-            <TaskModal onHide={handleTaskModalClose} show={addTaskModalShow} categories={categories} task={task} isEdit={editTask} toast={showMessage}/>
+            <TaskModal onHide={handleTaskModalClose} show={addTaskModalShow} categories={categories} task={task} isEdit={editTask} toast={showMessage} currentDate={date}/>
             <CategoriesModal onHide={handleCategoryModalClose} show={manageCategoryModalShow} isNew={addCategoryModalShow} category={category} toast={showMessage}/>
             <Navbar bg="light" variant="light" expand="lg">
                 <Container>

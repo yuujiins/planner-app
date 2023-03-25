@@ -1,11 +1,13 @@
 import React, {useEffect, useState} from "react"
 import {Button, ButtonGroup, Form, Modal} from "react-bootstrap";
 import {add_category, get_category, update_category} from "../services/category_service";
+import LoadingModal from "./loading_modal";
 
 const CategoriesModal = (props) => {
     const [name, setName] = useState()
     const [description, setDescription] = useState()
     const [categoryId, setCategoryId] = useState()
+    const [showLoading, setShowLoading] = useState(false)
 
     useEffect(() => {
 
@@ -39,6 +41,7 @@ const CategoriesModal = (props) => {
 
     const formSubmit = async (e) => {
         e.preventDefault()
+        setShowLoading(true)
         const data = {
             name: name,
             description: description
@@ -51,7 +54,6 @@ const CategoriesModal = (props) => {
             }
             else{
                 props.toast("Success!", "Category has been added")
-                props.onHide()
             }
         }
         else{
@@ -61,15 +63,16 @@ const CategoriesModal = (props) => {
             }
             else{
                 props.toast("Success!", "Category has been updated")
-
-                props.onHide()
             }
         }
+        setShowLoading(false)
+        props.onHide()
     }
 
     return (
       <>
-          <Modal size="lg" keyboard={false} backdrop="static" show={props.show} onHide={props.onHide} onShow={onModalShow}>
+          <LoadingModal show={showLoading}/>
+          <Modal style={{visibility:  showLoading ? 'hidden':'visible' }} size="lg" keyboard={false} backdrop="static" show={props.show} onHide={props.onHide} onShow={onModalShow}>
               <Modal.Header closeButton>
                   <Modal.Title>{props.isNew ? 'Add' : 'Edit'} category</Modal.Title>
               </Modal.Header>

@@ -1,6 +1,7 @@
 import {Button, ButtonGroup, Col, Form, Modal, Row} from "react-bootstrap";
 import React, {useState} from "react";
 import {add_task, get_task, update_task} from "../services/task_service";
+import LoadingModal from "./loading_modal";
 
 const TaskModal = (props) => {
     const [taskName, setTaskName] = useState()
@@ -8,6 +9,7 @@ const TaskModal = (props) => {
     const [category, setCategory] = useState()
     const [taskPriority, setTaskPriority] = useState(0)
     const [taskDate, setTaskDate] = useState(new Date().toLocaleDateString('en-CA'))
+    const [showLoading, setShowLoading] = useState(false)
 
     const handleNameInput = (e) => {
         setTaskName(e.target.value)
@@ -29,7 +31,7 @@ const TaskModal = (props) => {
             setCategory('')
             setTaskPriority(0)
             setTaskStatus(0)
-            setTaskDate(new Date().toLocaleDateString('en-CA'))
+            setTaskDate(props.currentDate.toLocaleDateString("en-CA"))
         }
     }
 
@@ -47,6 +49,7 @@ const TaskModal = (props) => {
 
     const formSubmit = async (e) => {
         e.preventDefault()
+        setShowLoading(true)
         let data = {
             name: taskName,
             category_id: category,
@@ -56,32 +59,34 @@ const TaskModal = (props) => {
         }
         if(props.isEdit){
             let result = await update_task(props.task, data)
-            console.log(result)
             if(result.ok){
                 props.toast("Success", "Task successfully updated")
-                props.onHide()
             }
             else{
-                props.toast("Error", "Failed to update task. Field validation error occurred")
+                const body = await result.json()
+                props.toast("Error", body.errors)
             }
         }
         else{
             //add new task
             let result = await add_task(data)
 
-            if(result.errors){
-                props.toast("Error", result.errors)
+            if(!result.ok){
+                const body = result.json()
+                props.toast("Error", body.errors)
             }
             else{
                 props.toast("Success", "Task added successfully!")
-                props.onHide()
             }
         }
+        setShowLoading(false)
+        props.onHide()
     }
 
     return (
         <>
-            <Modal show={props.show} onShow={onModalShow} onHide={props.onHide} backdrop="static" keyboard={false}>
+            <LoadingModal show={showLoading}/>
+            <Modal style={{visibility:  showLoading ? 'hidden':'visible' }} show={props.show} onShow={onModalShow} onHide={props.onHide} backdrop="static" keyboard={false}>
                 <Modal.Header closeButton>
                     <Modal.Title>{props.isEdit ? 'Edit' : 'Add'} tasks</Modal.Title>
                 </Modal.Header>
