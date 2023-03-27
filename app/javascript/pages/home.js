@@ -10,6 +10,7 @@ import {
     Table
 } from "react-bootstrap";
 import "../assets/styles.css";
+import landing from '../assets/bg-min.jpg'
 import {Col, Row} from "react-bootstrap";
 import {Calendar} from "react-calendar";
 import 'react-calendar/dist/Calendar.css';
@@ -44,6 +45,8 @@ const Home = () => {
     const [profileModalShow, setProfileModalShow] = useState(false)
     const [passwordModalShow, setPasswordModalShow] = useState(false)
     const [showLoading, setShowLoading] = useState(false)
+    const [taskViewMode, setTaskViewMode] = useState(true)
+    const [categoriesViewMode, setCategoriesViewMode] = useState(true)
 
     useEffect(() => {
         if(window.sessionStorage.getItem('token') == null){
@@ -61,9 +64,15 @@ const Home = () => {
         get_categories()
             .then((result) => result.json())
             .then((data) => {
-                setCategories(data)
-                setCategory(category)
-                getTasksFiltered()
+                if(data.errors){
+                    window.sessionStorage.clear()
+                    window.location.href = '/'
+                }
+                else{
+                    setCategories(data)
+                    setCategory(category)
+                    getTasksFiltered()
+                }
             })
     }
 
@@ -76,9 +85,14 @@ const Home = () => {
         get_tasks(filter)
             .then((result) => result.json())
             .then((data) => {
-
-                setTasks(data)
-                setShowLoading(false)
+                if(data.errors){
+                    window.sessionStorage.clear()
+                    window.location.href = '/'
+                }
+                else {
+                    setTasks(data)
+                    setShowLoading(false)
+                }
             })
     }
 
@@ -87,6 +101,7 @@ const Home = () => {
             showMessage("Warning", "There are no categories set. Please add categories first!")
         }
         else{
+            setTaskViewMode(false)
             setAddTaskModalShow(true)
         }
     }
@@ -104,17 +119,19 @@ const Home = () => {
         setAddTaskModalShow(false)
         setTask(undefined)
         setEditTask(false)
+        setTaskViewMode(true)
         setFlagger(Math.random())
     }
 
     const handleCategoryModalClose = () => {
         setManageCategoryModalShow(false)
         setAddCategoryModalShow(false)
-
+        setCategoriesViewMode(true)
         setFlagger(Math.random())
     }
 
     const handleAddCategoryModal = () => {
+        setCategoriesViewMode(false)
         setManageCategoryModalShow(true)
         setAddCategoryModalShow(true)
     }
@@ -222,14 +239,17 @@ const Home = () => {
 
 
     return (
-        <>
+        <div style={{backgroundImage: `url(${landing})`,
+            backgroundSize: "cover",
+            backdropFilter: "blur(100px)",
+            width: "100vw", height: "100vh"}}>
             <ToastC toastShow={toastShow} toastHide={toastHide} toastMessage={toastMessage} toastTitle={toastTitle}/>
             <LoadingModal show={showLoading}/>
             <PasswordModal onHide={handlePasswordModalClose} show={passwordModalShow}  toast={showMessage}/>
             <ProfileModal onHide={handleProfileModalClose} show={profileModalShow}  toast={showMessage}/>
-            <TaskModal onHide={handleTaskModalClose} show={addTaskModalShow} categories={categories} task={task} isEdit={editTask} toast={showMessage} currentDate={date} currentCategory={category}/>
-            <CategoriesModal onHide={handleCategoryModalClose} show={manageCategoryModalShow} isNew={addCategoryModalShow} category={category} toast={showMessage}/>
-            <Navbar bg="light" variant="light" expand="lg">
+            <TaskModal onHide={handleTaskModalClose} isViewMode={taskViewMode} show={addTaskModalShow} categories={categories} task={task} isEdit={editTask} toast={showMessage} currentDate={date} currentCategory={category}/>
+            <CategoriesModal onHide={handleCategoryModalClose} isViewMode={categoriesViewMode} show={manageCategoryModalShow} isNew={addCategoryModalShow} category={category} toast={showMessage}/>
+            <Navbar variant="light" expand="lg" style={{backgroundColor: "#D8BD85"}}>
                 <Container>
                     <Navbar.Brand>
                         Plannist
@@ -250,7 +270,7 @@ const Home = () => {
                     </Navbar.Collapse>
                 </Container>
             </Navbar>
-            <Container className="homeBackground">
+            <Container className="homeBackground" style={{paddingTop: "100px"}}>
                 <Row>
                     <Col md={4}>
                         <Card>
@@ -310,8 +330,10 @@ const Home = () => {
                                                     </Badge>
                                                 </td>
                                                 <td>
-                                                    <Button type="button" data-id={t.id} variant="outline-success" className="btn-sm" onClick={taskEditClick}><i className="fa-solid fa-eye"></i></Button>
-                                                    <Button type="button" data-id={t.id} variant="outline-danger" className="btn-sm" onClick={handleDeleteTask}><i className="fa-solid fa-trash"></i></Button>
+                                                    <ButtonGroup>
+                                                        <Button type="button" data-id={t.id} variant="outline-success" className="btn-sm" onClick={taskEditClick}><i className="fa-solid fa-eye"></i></Button>
+                                                        <Button type="button" data-id={t.id} variant="outline-danger" className="btn-sm" onClick={handleDeleteTask}><i className="fa-solid fa-trash"></i></Button>
+                                                    </ButtonGroup>
                                                 </td>
                                             </tr>)}
                                         </tbody>
@@ -345,8 +367,8 @@ const Home = () => {
                                                 </Col>
                                                 <Col md={4} className="d-flex flex-colum align-items-center justify-content-center">
                                                     <ButtonGroup>
-                                                        <Button variant="outline-success" className="btn-sm" onClick={handleAddCategoryModal}><span className="fa fa-plus"></span></Button>
-                                                        <Button variant="outline-info" className="btn-sm" onClick={handleManageCategory} disabled={category == 0}><i className="fa-solid fa-eye"></i></Button>
+                                                        <Button variant="outline-primary" className="btn-sm" onClick={handleAddCategoryModal}><span className="fa fa-plus"></span></Button>
+                                                        <Button variant="outline-success" className="btn-sm" onClick={handleManageCategory} disabled={category == 0}><i className="fa-solid fa-eye"></i></Button>
                                                         <Button variant="outline-danger" className="btn-sm" disabled={category == 0} onClick={handleDeleteCategory}><i className="fa fa-trash"></i></Button>
                                                     </ButtonGroup>
                                                 </Col>
@@ -359,7 +381,14 @@ const Home = () => {
                     </Col>
                 </Row>
             </Container>
-        </>
+            <Container fluid className="footer" style={{bottom: 0, position: "fixed", margin: 0, padding: 0}}>
+                <Navbar variant="light" className="text-center" expand="lg" style={{backgroundColor: "#F4DCAB"}}>
+                    <Container fluid className="text-center">
+                        Copyright &copy; {new Date().getFullYear()}, Plannist
+                    </Container>
+                </Navbar>
+            </Container>
+        </div>
     );
 }
 

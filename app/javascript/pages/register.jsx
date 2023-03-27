@@ -1,5 +1,5 @@
 import React, {useState} from "react"
-import landing from "../assets/landing-bg.jpg";
+import landing from '../assets/bg-min.jpg'
 import {Button, ButtonGroup, Card, Container, Form, Toast, ToastContainer} from "react-bootstrap";
 import {Link, useNavigate} from "react-router-dom";
 import {register_user} from "../services/user_service";

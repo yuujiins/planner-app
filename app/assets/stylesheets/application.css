@@ -16,3 +16,16 @@
 
 @import './react-calendar.css';
 @import './react-confirm-alert.css';
+
+.homeBackground {
+    padding-top: 50px;
+}
+
+.tasksCard{
+    max-height: 60vh;
+    overflow: auto;
+}
+
+.form-control{
+    margin-bottom: 5px;
+}

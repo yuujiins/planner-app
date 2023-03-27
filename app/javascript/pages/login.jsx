@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Button, ButtonGroup, Card, Container, Form, Image} from "react-bootstrap";
-import landing from "../assets/landing-bg.jpg";
+import landing from '../assets/bg-min.jpg'
 import journal from "../assets/journal.png";
 import {Link, useNavigate} from "react-router-dom";
 import ToastC from "../components/toastc";
@@ -88,7 +88,7 @@ const Login = (props) => {
             <LoadingModal show={showLoading}/>
             <ToastC toastShow={toastShow} toastHide={toastHide} toastMessage={toastMessage} toastTitle={toastTitle}/>
             <div className="d-flex flex-column align-items-center justify-content-center" style={{height: "100%", zIndex: "-1"}}>
-                <Card style={{width: "50%"}}>
+                <Card style={{width: "40%"}}>
                     <Card.Header>
                         <h4>Login to continue</h4>
                     </Card.Header>

@@ -10,21 +10,28 @@ const TaskModal = (props) => {
     const [taskPriority, setTaskPriority] = useState(0)
     const [taskDate, setTaskDate] = useState(new Date().toLocaleDateString('en-CA'))
     const [showLoading, setShowLoading] = useState(false)
+    const [viewMode, setViewMode] = useState(false)
 
     const handleNameInput = (e) => {
         setTaskName(e.target.value)
     }
 
-    const onModalShow = async () => {
-        if(props.isEdit){
-            let task = await get_task(props.task)
-            task = await task.json()
+    const getDetails = async() => {
+        let task = await get_task(props.task)
+        task = await task.json()
 
-            setTaskName(task.name)
-            setCategory(task.category_id)
-            setTaskPriority(task.priority)
-            setTaskStatus(task.status)
-            setTaskDate(task.task_date)
+        setTaskName(task.name)
+        setCategory(task.category_id)
+        setTaskPriority(task.priority)
+        setTaskStatus(task.status)
+        setTaskDate(task.task_date)
+    }
+    const onModalShow = async () => {
+
+        setViewMode(props.isViewMode)
+
+        if(props.isEdit){
+            await getDetails()
         }
         else{
             setTaskName('')
@@ -45,6 +52,13 @@ const TaskModal = (props) => {
 
     const handleCategoryInput = (e) => {
         setCategory(e.target.value)
+    }
+
+    const handleChangeViewMode = async () => {
+        if(!viewMode){
+            await getDetails()
+        }
+        setViewMode(!viewMode)
     }
 
     const formSubmit = async (e) => {
@@ -88,17 +102,17 @@ const TaskModal = (props) => {
             <LoadingModal show={showLoading}/>
             <Modal style={{visibility:  showLoading ? 'hidden':'visible' }} show={props.show} onShow={onModalShow} onHide={props.onHide} backdrop="static" keyboard={false}>
                 <Modal.Header closeButton>
-                    <Modal.Title>{props.isEdit ? 'Edit' : 'Add'} tasks</Modal.Title>
+                    <Modal.Title>{props.isEdit ? (viewMode ? 'View' : 'Edit') : 'Add'} task</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form onSubmit={formSubmit}>
                         <Form.Group>
                             <Form.Label>Task Name<span className="text-danger">*</span></Form.Label>
-                            <Form.Control type="text" value={taskName} onChange={handleNameInput} required/>
+                            <Form.Control type="text" disabled={viewMode} value={taskName} onChange={handleNameInput} required/>
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>Category<span className="text-danger">*</span> </Form.Label>
-                            <select className="form-control" value={category} onChange={handleCategoryInput} required>
+                            <select className="form-control" value={category} onChange={handleCategoryInput} disabled={viewMode} required>
                                 <option value=''>--Please select--</option>
                                 {props.categories.map(c => <option value={c.id}>{c.name}</option>) }
                             </select>
@@ -107,7 +121,7 @@ const TaskModal = (props) => {
                             <Col>
                                 <Form.Group>
                                     <Form.Label>Priority<span className="text-danger">*</span></Form.Label>
-                                    <select className="form-control" value={taskPriority} onChange={handlePriorityInput} required>
+                                    <select className="form-control" value={taskPriority} onChange={handlePriorityInput} disabled={viewMode} required>
                                         <option value="0">Low</option>
                                         <option value="1">Medium</option>
                                         <option value="2">High</option>
@@ -117,15 +131,20 @@ const TaskModal = (props) => {
                             <Col>
                                 <Form.Group>
                                     <Form.Label>Date<span className="text-danger">*</span></Form.Label>
-                                    <Form.Control type="date" value={taskDate} onChange={handleDateChange} required/>
+                                    <Form.Control type="date" value={taskDate} onChange={handleDateChange} disabled={viewMode} required/>
                                 </Form.Group>
                             </Col>
                         </Row>
                         <hr/>
                         <Form.Group>
-                            <ButtonGroup>
-                                <Button type="submit" variant="primary">Save</Button>
+                            <ButtonGroup className="float-start">
+                                <Button type="submit" variant="primary" disabled={viewMode}>Save</Button>
                                 <Button type="reset" variant="warning" onClick={props.onHide}>Cancel</Button>
+                            </ButtonGroup>
+                            <ButtonGroup className="float-end" hidden={!props.isEdit}>
+                                <Button type="button" className="btn-sm" variant={viewMode ? 'outline-success' : 'outline-warning'} onClick={handleChangeViewMode}>
+                                    {viewMode ? <i className="fa fa-pencil"></i> : <i className="fa fa-rotate-left"></i>}
+                                </Button>
                             </ButtonGroup>
                         </Form.Group>
                     </Form>

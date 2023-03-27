@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import landing from '../assets/landing-bg.jpg'
+import landing from '../assets/bg-min.jpg'
 import {Container, Image} from "react-bootstrap";
 import '../assets/styles.css';
 import journal from '../assets/journal.png'
@@ -23,12 +23,14 @@ const Landing = (props) => {
     return <>
         <Container fluid={true} style={{backgroundImage: `url(${landing})`,
             backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
             width: "100vw", height: "100vh"
         }} className="landing-bg">
             <div className="d-flex flex-column align-items-center justify-content-center" style={{height: "100%", zIndex: "-1"}}>
                 <Image src={journal} style={{width: "150px", height: "auto"}}/>
                 <h2>Keep track of what's important.</h2>
-                <Button variant={"outline-secondary"} onClick={goToPlanner} >Go to your planner</Button>
+                <h5>Be a Plannist!</h5>
+                <Button variant={"primary"} onClick={goToPlanner} >Go to your planner</Button>
             </div>
 
         </Container>

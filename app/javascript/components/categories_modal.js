@@ -8,21 +8,29 @@ const CategoriesModal = (props) => {
     const [description, setDescription] = useState()
     const [categoryId, setCategoryId] = useState()
     const [showLoading, setShowLoading] = useState(false)
+    const [viewMode, setViewMode] = useState(false)
 
     useEffect(() => {
 
     }, [])
 
+    const getDetails = () => {
+        get_category(props.category)
+            .then((result) =>  result.json())
+            .then((data) => {
+                setName(data.name)
+                setDescription(data.description)
+                setCategoryId(data.id)
+            })
+    }
+
     const onModalShow = () => {
+
+        setViewMode(props.isViewMode)
+
         if(!props.isNew){
             //Get category details for edit
-            get_category(props.category)
-                .then((result) =>  result.json())
-                .then((data) => {
-                    setName(data.name)
-                    setDescription(data.description)
-                    setCategoryId(data.id)
-                })
+            getDetails()
         }
         else{
             setName('')
@@ -33,6 +41,13 @@ const CategoriesModal = (props) => {
 
     const handleNameInput = (e) => {
         setName(e.target.value)
+    }
+
+    const handleChangeViewMode = async () => {
+        if(!viewMode){
+            await getDetails()
+        }
+        setViewMode(!viewMode)
     }
 
     const handleDescriptionInput = (e) => {
@@ -80,17 +95,22 @@ const CategoriesModal = (props) => {
                   <Form onSubmit={formSubmit}>
                       <Form.Group>
                           <Form.Label>Category Name<span className="text-danger">*</span></Form.Label>
-                          <Form.Control type="text" value={name} onChange={handleNameInput} required/>
+                          <Form.Control type="text" disabled={viewMode} value={name} onChange={handleNameInput} required/>
                       </Form.Group>
                       <Form.Group>
                           <Form.Label>Category Description<span className="text-danger">*</span></Form.Label>
-                          <Form.Control type="text" value={description} onChange={handleDescriptionInput} required/>
+                          <Form.Control type="text" disabled={viewMode} value={description} onChange={handleDescriptionInput} required/>
                       </Form.Group>
                       <hr/>
                       <Form.Group>
-                          <ButtonGroup>
-                              <Button type="submit" variant="primary" className="btn-sm">Save</Button>
+                          <ButtonGroup className="float-start">
+                              <Button type="submit" variant="primary" className="btn-sm" disabled={viewMode}>Save</Button>
                               <Button type="reset" variant="warning" className="btn-sm" onClick={props.onHide}>Cancel</Button>
+                          </ButtonGroup>
+                          <ButtonGroup className="float-end" hidden={props.isNew}>
+                              <Button type="button" className="btn-sm" variant={viewMode ? 'outline-success' : 'outline-warning'} onClick={handleChangeViewMode}>
+                                  {viewMode ? <i className="fa fa-pencil"></i> : <i className="fa fa-rotate-left"></i>}
+                              </Button>
                           </ButtonGroup>
                       </Form.Group>
                   </Form>
