@@ -4,6 +4,7 @@ import {Button, ButtonGroup, Card, Container, Form, Toast, ToastContainer} from 
 import {Link, useNavigate} from "react-router-dom";
 import {register_user} from "../services/user_service";
 import ToastC from "../components/toastc";
+import LoadingModal from "../components/loading_modal";
 
 const Register = (props) => {
     const navigate = useNavigate()
@@ -16,6 +17,7 @@ const Register = (props) => {
     const [toastTitle, setToastTitle] = useState()
     const [toastMessage, setToastMessage] = useState()
     const [toastShow, setToastShow] = useState(false)
+    const [showLoading, setShowLoading] = useState(false)
 
     const clearStates = () => {
         setEmail('')
@@ -52,6 +54,7 @@ const Register = (props) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault()
+        setShowLoading(true)
         if(password == retypePassword){
             const data = {
                 last_name: lastName,
@@ -71,6 +74,7 @@ const Register = (props) => {
                 else{
                     showMessage("Success", "You are now registered")
                     setTimeout(() => {
+                        setShowLoading(false)
                         navigate('/login', {
                             replace: false
                         })
@@ -79,10 +83,12 @@ const Register = (props) => {
 
             }
             catch (e) {
+                setShowLoading(false)
                 showMessage("Error", "Internal server error occurred. Please contact administrator")
             }
         }
         else{
+            setShowLoading(false)
             showMessage("Error", "Passwords do not match!")
         }
     }
@@ -99,6 +105,7 @@ const Register = (props) => {
 
     return (
         <>
+            <LoadingModal show={showLoading}/>
             <Container fluid={true} style={{backgroundImage: `url(${landing})`,
                 backgroundSize: "cover",
                 width: "100vw", height: "100vh"
